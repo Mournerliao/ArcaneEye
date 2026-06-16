@@ -13,7 +13,7 @@ Write Conventional Commits for this project. All commit messages must be in Engl
 type(scope): subject
 ```
 
-- `type` — one of: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`
+- `type` — one of: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 - `scope` — required, lowercase, describes the affected area (e.g. `auth`, `db`, `ui`, `web`, `lint`, `harness`, `repo`)
 - `subject` — English only, lowercase start, no period at end, max 100 chars total header
 
@@ -27,20 +27,21 @@ type(scope): subject
    - `docs` — documentation only
    - `style` — formatting, whitespace, no logic change
    - `refactor` — code restructuring without behavior change
+   - `perf` — performance improvement
    - `test` — adding or updating tests
    - `chore` — tooling, config, dependencies, CI
    - `build` — build system or external dependencies
    - `ci` — CI configuration
+   - `revert` — revert a previous commit
 4. Determine `scope` from the changed files:
-   - `apps/web/` → `web` or more specific (`auth`, `middleware`, etc.)
-   - `packages/db/` → `db`
-   - `packages/ui/` → `ui`
-   - `packages/notion/` → `notion`
-   - `packages/extractor/` → `extractor`
-   - `packages/core/` → `core`
+   - `src-tauri/` → `tauri` or more specific (`screenshot`, `commands`, etc.)
+   - `src/components/` → `ui`
+   - `src/hooks/` → `hooks`
+   - `src/services/` → `services`
+   - `src/stores/` → `stores`
    - `harness/` → `harness`
    - config files at root → `repo`
-   - `commitlint.config.*`, `lefthook.yml`, `.gitignore`, `turbo.json` → `repo`
+   - `commitlint.config.*`, `lefthook.yml`, `.gitignore`, `tauri.conf.json` → `repo`
 5. Write the subject: describe **what** changed, not why. Use imperative mood ("add", "fix", "update"), not past tense.
 6. Present the full commit message to the user for approval before committing.
 7. Run `git commit -m "type(scope): subject"` after approval.
@@ -66,6 +67,8 @@ fix(lint): add projectService config to fix IDE ESLint parse errors
 refactor(db): extract connection pool into shared module
 test(auth): add unit tests for session validation
 style(ui): format button component with prettier
+perf(services): optimize champion data fetching with cache
+revert(tauri): revert screenshot capture changes
 ```
 
 ## Multi-commit Strategy
