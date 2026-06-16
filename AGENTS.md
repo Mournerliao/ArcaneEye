@@ -74,9 +74,10 @@ perf:  性能优化
 
 ## 关键文件
 
-- `harness/docs/project.md` — 项目详细文档
+- `PRODUCT.md` — 产品定位、用户画像、设计原则
+- `DESIGN.md` — 视觉规范（色板、字体、动效、布局、组件）
+- `harness/docs/project.md` — 综合技术参考
 - `harness/README.md` — harness 层索引
-- `src-tauri/tauri.conf.json` — Tauri 配置
 - `package.json` — 前端依赖配置
 
 ## 特殊注意事项
