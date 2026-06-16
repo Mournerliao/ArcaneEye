@@ -1,0 +1,14 @@
+# Lefthook - Git hooks manager
+# https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      glob: "*.{js,ts,jsx,tsx,vue,json,css,scss,md}"
+      run: bunx lint-staged
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx commitlint --edit {1}
