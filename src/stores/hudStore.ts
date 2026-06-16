@@ -20,6 +20,8 @@ interface HudStore {
   subtitle: string
   items: RankedItem[]
   source: string
+  loading: boolean
+  error: string | null
   setContent: (payload: {
     mode: HudMode
     title: string
@@ -27,6 +29,8 @@ interface HudStore {
     items: RankedItem[]
     source?: string
   }) => void
+  setLoading: (v: boolean) => void
+  setError: (msg: string | null) => void
 
   /* Timer */
   autoHideMs: number
@@ -42,7 +46,7 @@ export const useHudStore = create<HudStore>((set, get) => ({
   exiting: false,
 
   show() {
-    set({ visible: true, exiting: false, progress: 0 })
+    set({ visible: true, exiting: false, progress: 0, error: null })
   },
 
   hide() {
@@ -66,6 +70,8 @@ export const useHudStore = create<HudStore>((set, get) => ({
   subtitle: "",
   items: [],
   source: "ARAMGG",
+  loading: false,
+  error: null,
 
   setContent({ mode, title, subtitle, items, source }) {
     set({
@@ -74,7 +80,17 @@ export const useHudStore = create<HudStore>((set, get) => ({
       subtitle: subtitle ?? "",
       items,
       source: source ?? "ARAMGG",
+      loading: false,
+      error: null,
     })
+  },
+
+  setLoading(v) {
+    set({ loading: v })
+  },
+
+  setError(msg) {
+    set({ error: msg, loading: false })
   },
 
   /* Timer */
