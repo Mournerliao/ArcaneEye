@@ -4,7 +4,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY
+const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY
 const aramggBase = process.env.VITE_ARAMGG_API_BASE
 const aramggKey = process.env.VITE_ARAMGG_API_KEY
 
