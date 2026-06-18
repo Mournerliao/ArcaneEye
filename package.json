@@ -41,7 +41,7 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
-      "eslint --fix --ignore-pattern 'harness/skills/**'"
+      "eslint --fix"
     ],
     "*.{json,css,md}": [
       "prettier --write"

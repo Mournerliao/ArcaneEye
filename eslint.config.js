@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint"
 export default tseslint.config(
   /* Ignored paths */
   {
-    ignores: ["dist/", "src-tauri/", "node_modules/", "*.config.*"],
+    ignores: ["dist/", "src-tauri/", "node_modules/", "*.config.*", "harness/skills/"],
   },
 
   /* Base JS rules */
