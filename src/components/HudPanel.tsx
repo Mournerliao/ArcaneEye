@@ -5,7 +5,7 @@ import { useHudStore } from "@/stores/hudStore"
 import { useThemeStore } from "@/stores/themeStore"
 import { useAutoHide } from "@/hooks/useAutoHide"
 import { RankedList } from "@/components/RankedList"
-import { SAMPLE_CHAMPIONS, SAMPLE_HEX_AUGMENTS } from "@/services/placeholderData"
+import { fetchChampionRanking, fetchAugmentRanking } from "@/services/dataQuery"
 
 /* ── Entrance / exit animation variants ── */
 const panelVariants = {
@@ -43,6 +43,8 @@ export function HudPanel() {
   const show = useHudStore((s) => s.show)
   const hide = useHudStore((s) => s.hide)
   const setContent = useHudStore((s) => s.setContent)
+  const setLoading = useHudStore((s) => s.setLoading)
+  const setError = useHudStore((s) => s.setError)
   const toggle = useHudStore((s) => s.toggle)
 
   const { progress } = useAutoHide()
@@ -61,26 +63,50 @@ export function HudPanel() {
     return () => window.removeEventListener("keydown", handler)
   }, [toggle])
 
-  /* ── Demo: load placeholder data ── */
-  const loadChampions = useCallback(() => {
+  /* ── Load real data from Supabase ── */
+  const loadChampions = useCallback(async () => {
+    show()
     setContent({
       mode: "champion",
       title: "英雄胜率排名",
       subtitle: "大乱斗 · 当前版本",
-      items: SAMPLE_CHAMPIONS,
+      items: [],
     })
-    show()
-  }, [setContent, show])
+    setLoading(true)
+    try {
+      const data = await fetchChampionRanking(10)
+      setContent({
+        mode: "champion",
+        title: "英雄胜率排名",
+        subtitle: "大乱斗 · 当前版本",
+        items: data,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "加载英雄数据失败")
+    }
+  }, [show, setContent, setLoading, setError])
 
-  const loadHex = useCallback(() => {
+  const loadHex = useCallback(async () => {
+    show()
     setContent({
       mode: "hex",
       title: "海克斯强化推荐",
-      subtitle: "泽丽 · 大乱斗",
-      items: SAMPLE_HEX_AUGMENTS,
+      subtitle: "大乱斗 · 当前版本",
+      items: [],
     })
-    show()
-  }, [setContent, show])
+    setLoading(true)
+    try {
+      const data = await fetchAugmentRanking(10)
+      setContent({
+        mode: "hex",
+        title: "海克斯强化推荐",
+        subtitle: "大乱斗 · 当前版本",
+        items: data,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "加载海克斯数据失败")
+    }
+  }, [show, setContent, setLoading, setError])
 
   /* ── Idle state: show product intro ── */
   if (!visible) {
@@ -269,7 +295,7 @@ export function HudPanel() {
           <span className="text-2xl opacity-40">⚠</span>
           <p className="text-sm text-muted">{error}</p>
           <button
-            onClick={loadChampions}
+            onClick={mode === "champion" ? loadChampions : loadHex}
             className="rounded-sm bg-surface-2 px-3 py-1.5 text-xs text-ink transition-colors hover:bg-primary hover:text-white"
           >
             重试
