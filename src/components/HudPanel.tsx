@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useEffect } from "react"
 import { motion } from "motion/react"
 import { useShallow } from "zustand/shallow"
 import { useHudStore } from "@/stores/hudStore"
+import { useThemeStore } from "@/stores/themeStore"
 import { useAutoHide } from "@/hooks/useAutoHide"
 import { RankedList } from "@/components/RankedList"
 import { SAMPLE_CHAMPIONS, SAMPLE_HEX_AUGMENTS } from "@/services/placeholderData"
@@ -45,6 +46,8 @@ export function HudPanel() {
   const toggle = useHudStore((s) => s.toggle)
 
   const { progress } = useAutoHide()
+  const theme = useThemeStore((s) => s.theme)
+  const toggleTheme = useThemeStore((s) => s.toggleTheme)
 
   /* ── Keyboard shortcut: Alt+Q ── */
   useEffect(() => {
@@ -128,6 +131,26 @@ export function HudPanel() {
           </div>
 
           <span className="text-xs text-muted">Alt+Q 唤起 / 关闭</span>
+
+          <button
+            onClick={toggleTheme}
+            className="mt-1 flex items-center gap-1.5 text-xs text-muted transition-colors hover:text-ink"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            {theme === "cyan" ? "海克斯青" : "海克斯金"}
+          </button>
         </div>
       </div>
     )

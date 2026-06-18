@@ -2,39 +2,74 @@
 
 /* ═══════════════════════════════════════════════════════════
    ArcaneEye Design Tokens (DESIGN.md)
-   OKLCH palette · Inter + JetBrains Mono · arcane glow
+   OKLCH palette · Inter + JetBrains Mono · Hextech themes
    ═══════════════════════════════════════════════════════════ */
 
-@theme {
-  /* ── Surface hierarchy ── */
-  --color-bg: oklch(0.08 0.005 140);
-  --color-surface: oklch(0.12 0.01 140);
-  --color-surface-2: oklch(0.16 0.012 140);
+/* ── Theme palettes ── */
 
-  /* ── Brand ── */
-  --color-primary: oklch(0.65 0.16 140);
-  --color-accent: oklch(0.75 0.12 85);
+:root {
+  /* Surface hierarchy */
+  --c-bg: oklch(0.07 0.01 200);
+  --c-surface: oklch(0.11 0.015 200);
+  --c-surface-2: oklch(0.15 0.018 200);
 
-  /* ── Text ── */
-  --color-ink: oklch(0.95 0.008 140);
-  --color-muted: oklch(0.55 0.03 140);
+  /* Brand */
+  --c-primary: oklch(0.72 0.13 185);
+  --c-accent: oklch(0.78 0.1 85);
 
-  /* ── Semantic ── */
+  /* Text */
+  --c-ink: oklch(0.95 0.005 200);
+  --c-muted: oklch(0.5 0.03 200);
+
+  /* Shadows */
+  --c-glow: oklch(0.72 0.13 185 / 0.3);
+  --c-glow-lg: oklch(0.72 0.13 185 / 0.4);
+}
+
+[data-theme="gold"] {
+  --c-bg: oklch(0.08 0.008 75);
+  --c-surface: oklch(0.12 0.012 75);
+  --c-surface-2: oklch(0.16 0.015 75);
+  --c-primary: oklch(0.78 0.12 80);
+  --c-accent: oklch(0.72 0.13 185);
+  --c-ink: oklch(0.95 0.008 75);
+  --c-muted: oklch(0.52 0.03 75);
+  --c-glow: oklch(0.78 0.12 80 / 0.3);
+  --c-glow-lg: oklch(0.78 0.12 80 / 0.4);
+}
+
+/* ── Tailwind v4 theme mapping ── */
+
+@theme inline {
+  /* Surface hierarchy */
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+
+  /* Brand */
+  --color-primary: var(--c-primary);
+  --color-accent: var(--c-accent);
+
+  /* Text */
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+
+  /* Semantic (shared across themes) */
   --color-success: oklch(0.72 0.15 145);
   --color-warning: oklch(0.78 0.14 70);
   --color-danger: oklch(0.62 0.18 25);
 
-  /* ── Fonts ── */
+  /* Fonts */
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* ── Radius ── */
+  /* Radius */
   --radius-panel: 8px;
   --radius-sm: 4px;
 
-  /* ── Shadows ── */
-  --shadow-glow: 0 0 12px oklch(0.65 0.16 140 / 0.3);
-  --shadow-glow-lg: 0 0 24px oklch(0.65 0.16 140 / 0.4);
+  /* Shadows */
+  --shadow-glow: 0 0 12px var(--c-glow);
+  --shadow-glow-lg: 0 0 24px var(--c-glow-lg);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -66,6 +101,13 @@ body,
 ::-webkit-scrollbar-thumb {
   background: var(--color-surface-2);
   border-radius: 2px;
+}
+
+/* ── Theme transition ── */
+html {
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
 }
 
 /* ═══════════════════════════════════════════════════════════

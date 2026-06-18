@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { HudPanel } from "@/components/HudPanel"
+import { useThemeStore } from "@/stores/themeStore"
 
 /**
  * ArcaneEye root component.
@@ -7,5 +9,12 @@ import { HudPanel } from "@/components/HudPanel"
  * Visibility and auto-hide logic live inside HudPanel.
  */
 export function App() {
+  const theme = useThemeStore((s) => s.theme)
+
+  /* Sync theme to <html> on mount (backup for rehydration timing) */
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme === "cyan" ? "" : theme
+  }, [theme])
+
   return <HudPanel />
 }

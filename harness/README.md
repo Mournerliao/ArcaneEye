@@ -7,7 +7,8 @@
 ```
 harness/
 ├── docs/                        # 项目文档
-│   └── project.md               #   综合技术参考（架构、技术栈、开发流程）
+│   ├── project.md               #   综合技术参考（架构、技术栈、开发流程）
+│   └── theming.md               #   主题系统开发指南（新增主题、色值规范）
 ├── skills/                      # 项目特定技能
 │   └── aram-data-reference/     #   ARAM 数据参考
 └── workflows/                   # 开发工作流
