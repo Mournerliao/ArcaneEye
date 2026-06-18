@@ -6,6 +6,10 @@
 
 ```
 harness/
+├── agents/                      # Agent 技能配置
+│   ├── issue-tracker.md         #   Issue 追踪器（GitHub Issues）
+│   ├── triage-labels.md         #   分类标签映射
+│   └── domain.md                #   领域文档消费规则
 ├── docs/                        # 项目文档
 │   ├── project.md               #   综合技术参考（架构、技术栈、开发流程）
 │   └── theming.md               #   主题系统开发指南（新增主题、色值规范）
