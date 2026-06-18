@@ -49,3 +49,6 @@ desktop.ini
 # === Agent Tool Caches ===
 .codegraph/
 .reasonix/
+
+# === Skills Lock ===
+skills-lock.json

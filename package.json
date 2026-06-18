@@ -40,7 +40,7 @@
     "vite": "^6"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
+    "src/**/*.{js,ts,jsx,tsx}": [
       "eslint --fix"
     ],
     "*.{json,css,md}": [
