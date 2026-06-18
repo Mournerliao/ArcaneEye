@@ -1,6 +1,6 @@
 "$schema" = "schemas/schema.json"
 
-[permission]
+[[permission]]
 identifier = "allow-capture-screen"
 description = "Capture the primary monitor screen and return a base64 PNG data URL."
 commands.allow = ["capture_screen"]
