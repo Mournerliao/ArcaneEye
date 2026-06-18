@@ -1,7 +1,12 @@
 // 测试 Supabase 和 ARAMGG API 连接
 // 运行: bun run scripts/test-connection.ts
 
+import { loadEnv } from 'vite'
 import { createClient } from '@supabase/supabase-js'
+
+// 加载 .env.local 环境变量
+const env = loadEnv('development', process.cwd(), '')
+Object.assign(process.env, env)
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY

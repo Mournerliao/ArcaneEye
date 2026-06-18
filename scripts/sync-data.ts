@@ -1,7 +1,12 @@
 // ARAMGG 数据同步脚本
 // 运行: bun run scripts/sync-data.ts
 
+import { loadEnv } from 'vite'
 import { syncAll } from '@/services/dataSync'
+
+// 加载 .env.local 环境变量
+const env = loadEnv('development', process.cwd(), '')
+Object.assign(process.env, env)
 
 async function main() {
   console.log('🚀 ArcaneEye 数据同步')
