@@ -2,8 +2,8 @@ import { type CSSProperties } from "react"
 import { motion } from "motion/react"
 import { useHudVisibility, EXIT_ANIMATION_MS } from "@/stores/hudVisibility"
 import { useHudContent } from "@/stores/hudContent"
+import { useRankingDataStore } from "@/stores/rankingData"
 import { useAutoHide } from "@/hooks/useAutoHide"
-import { useRankingData } from "@/hooks/useRankingData"
 import { RankedList } from "@/components/RankedList"
 
 /* ── Entrance / exit animation variants ── */
@@ -34,14 +34,16 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
   const { mode, title, subtitle, source } = useHudContent()
   const { progress } = useAutoHide()
 
-  const championsData = useRankingData("champion", 10)
-  const hexData = useRankingData("hex", 10)
+  const championItems = useRankingDataStore((s) => s.championItems)
+  const hexItems = useRankingDataStore((s) => s.hexItems)
+  const loading = useRankingDataStore((s) => s.loading)
+  const error = useRankingDataStore((s) => s.error)
 
-  const currentData = mode === "champion" ? championsData : hexData
+  const currentItems = mode === "champion" ? championItems : hexItems
 
   /* ── Data panel content ── */
   const panelContent = (() => {
-    if (currentData.loading) {
+    if (loading) {
       return (
         <div className="flex flex-col gap-2.5 py-2">
           {Array.from({ length: 4 }, (_, i) => (
@@ -58,11 +60,11 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       )
     }
 
-    if (currentData.error) {
+    if (error) {
       return (
         <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
           <span className="text-2xl opacity-40">⚠</span>
-          <p className="text-sm text-muted">{currentData.error}</p>
+          <p className="text-sm text-muted">{error}</p>
           <button
             onClick={mode === "champion" ? onLoadChampions : onLoadHex}
             className="rounded-sm bg-surface-2 px-3 py-1.5 text-xs text-ink transition-colors hover:bg-primary hover:text-white"
@@ -73,7 +75,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       )
     }
 
-    if (currentData.items.length === 0) {
+    if (currentItems.length === 0) {
       const icon = mode === "champion" ? "🔮" : "⚡"
       const msg = mode === "champion" ? "暂无英雄数据" : "暂无海克斯数据"
       return (
@@ -84,7 +86,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       )
     }
 
-    return <RankedList items={currentData.items} />
+    return <RankedList items={currentItems} />
   })()
 
   return (

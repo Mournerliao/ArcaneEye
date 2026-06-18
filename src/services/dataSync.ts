@@ -38,7 +38,7 @@ function transformAugment(
   return {
     id: a.id,
     name: a.name,
-    display_name: a.rarityDisplayName ?? a.name,
+    display_name: a.name, // 使用 name 作为显示名
     rarity: a.rarity,
     rarity_name: a.rarityName,
     icon_url: a.iconUrl,
