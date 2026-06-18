@@ -1,5 +1,7 @@
+import { useCallback } from "react"
 import { motion } from "motion/react"
 import { SettingsIcon, SunIcon, LayersIcon, ZapIcon } from "lucide-react"
+import { getCurrentWindow } from "@tauri-apps/api/window"
 import { useThemeStore } from "@/stores/themeStore"
 import { Button } from "@/components/ui/button"
 
@@ -13,8 +15,13 @@ export function IdleScreen({ onLoadChampions, onLoadHex, onOpenSettings }: IdleS
   const theme = useThemeStore((s) => s.theme)
   const toggleTheme = useThemeStore((s) => s.toggleTheme)
 
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    getCurrentWindow().startDragging()
+  }, [])
+
   return (
-    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-bg">
+    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden rounded-panel bg-bg">
       {/* Background atmosphere */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -25,6 +32,19 @@ export function IdleScreen({ onLoadChampions, onLoadHex, onOpenSettings }: IdleS
         }}
       />
       <div className="hex-grid-bg pointer-events-none absolute inset-0" />
+
+      {/* Drag handle — top center */}
+      <motion.div
+        className="absolute top-2 left-1/2 z-20 -translate-x-1/2 cursor-grab active:cursor-grabbing"
+        onMouseDown={handleDragStart}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.5 }}
+      >
+        <div className="flex h-6 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors hover:bg-primary/20">
+          <div className="h-1 w-5 rounded-full bg-primary/40" />
+        </div>
+      </motion.div>
 
       {/* Settings gear — top-left corner */}
       <motion.div
