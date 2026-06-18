@@ -40,8 +40,8 @@
     "vite": "^6"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,jsx,tsx}": [
-      "eslint --fix"
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix --ignore-pattern 'harness/skills/**'"
     ],
     "*.{json,css,md}": [
       "prettier --write"
