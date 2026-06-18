@@ -4,9 +4,6 @@ import { create } from "zustand"
 export const EXIT_ANIMATION_MS = 300
 export const EXIT_ANIMATION_BUFFER_MS = 20
 
-/* ─── Auto-hide duration (ms) ─── */
-const AUTO_HIDE_MS = 5_000
-
 /* ─── Store interface ─── */
 
 interface HudVisibilityStore {
@@ -15,9 +12,6 @@ interface HudVisibilityStore {
   show: () => void
   hide: () => void
   toggle: () => void
-  autoHideMs: number
-  progress: number
-  setProgress: (v: number) => void
 }
 
 /* ─── Store ─── */
@@ -27,7 +21,7 @@ export const useHudVisibility = create<HudVisibilityStore>((set, get) => ({
   exiting: false,
 
   show() {
-    set({ visible: true, exiting: false, progress: 0 })
+    set({ visible: true, exiting: false })
   },
 
   hide() {
@@ -42,11 +36,5 @@ export const useHudVisibility = create<HudVisibilityStore>((set, get) => ({
     } else if (!visible) {
       get().show()
     }
-  },
-
-  autoHideMs: AUTO_HIDE_MS,
-  progress: 0,
-  setProgress(v) {
-    set({ progress: v })
   },
 }))
