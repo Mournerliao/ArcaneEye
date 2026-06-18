@@ -64,14 +64,15 @@ export async function fetchAugmentRanking(limit = 10): Promise<RankedItem[]> {
 
 /**
  * 获取某个英雄的最佳海克斯推荐
+ * 使用 Supabase join 语法一次性获取关联数据
  */
 export async function fetchChampionAugments(
   championId: number,
   limit = 5
 ): Promise<RankedItem[]> {
-  const { data: caData, error } = await supabase
+  const { data, error } = await supabase
     .from('champion_augments')
-    .select('*')
+    .select('*, augments(display_name)')
     .eq('champion_id', championId)
     .order('win_rate', { ascending: false })
     .limit(limit)
@@ -82,26 +83,15 @@ export async function fetchChampionAugments(
     )
   }
 
-  const rows = (caData ?? []) as ChampionAugment[]
+  const rows = (data ?? []) as (ChampionAugment & { augments: { display_name: string } | null })[]
   if (rows.length === 0) return []
-
-  // 批量获取海克斯名称
-  const augmentIds = rows.map((r) => r.augment_id)
-  const { data: augmentRows } = await supabase
-    .from('augments')
-    .select('id, display_name')
-    .in('id', augmentIds)
-
-  const nameMap = new Map<number, string>(
-    ((augmentRows ?? []) as Augment[]).map((a) => [a.id, a.display_name])
-  )
 
   const avgWinRate =
     rows.reduce((sum, ca) => sum + ca.win_rate, 0) / rows.length
 
   return rows.map((item, index) => ({
     rank: index + 1,
-    name: nameMap.get(item.augment_id) ?? 'Unknown',
+    name: item.augments?.display_name ?? 'Unknown',
     winRate: roundWinRate(item.win_rate),
     delta: roundWinRate(item.win_rate - avgWinRate),
   }))

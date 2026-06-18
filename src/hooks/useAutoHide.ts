@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react"
-import { useHudStore } from "@/stores/hudStore"
+import { useHudVisibility } from "@/stores/hudVisibility"
 
 /**
  * Drives the auto-hide countdown.
@@ -8,13 +8,13 @@ import { useHudStore } from "@/stores/hudStore"
  * When progress reaches 1 the overlay is hidden automatically.
  */
 export function useAutoHide() {
-  const visible = useHudStore((s) => s.visible)
-  const exiting = useHudStore((s) => s.exiting)
-  const autoHideMs = useHudStore((s) => s.autoHideMs)
-  const hide = useHudStore((s) => s.hide)
+  const visible = useHudVisibility((s) => s.visible)
+  const exiting = useHudVisibility((s) => s.exiting)
+  const autoHideMs = useHudVisibility((s) => s.autoHideMs)
+  const hide = useHudVisibility((s) => s.hide)
 
-  const progress = useHudStore((s) => s.progress)
-  const setProgress = useHudStore((s) => s.setProgress)
+  const progress = useHudVisibility((s) => s.progress)
+  const setProgress = useHudVisibility((s) => s.setProgress)
 
   const rafRef = useRef<number>(0)
   const startRef = useRef<number>(0)
