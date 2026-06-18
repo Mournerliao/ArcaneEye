@@ -1,12 +1,14 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capabilities for the main window",
-  "windows": ["main"],
+  "description": "Default capabilities for ArcaneEye windows",
+  "windows": ["main", "hud"],
   "permissions": [
     "core:window:default",
     "core:window:allow-set-ignore-cursor-events",
     "core:window:allow-set-always-on-top",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
     "core:window:allow-close",
     "core:window:allow-minimize",
     "core:window:allow-set-focus",
@@ -14,6 +16,7 @@
     "core:event:default",
     "core:app:default",
     "core:path:default",
-    "allow-capture-screen"
+    "allow-capture-screen",
+    "allow-hud-window"
   ]
 }

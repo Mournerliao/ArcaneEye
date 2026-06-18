@@ -28,11 +28,11 @@ const panelVariants = {
 }
 
 interface HudOverlayProps {
-  onLoadChampions: () => void
-  onLoadHex: () => void
+  onHidden: () => void
+  onRetry: () => void
 }
 
-export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
+export function HudOverlay({ onHidden, onRetry }: HudOverlayProps) {
   const { exiting } = useHudVisibility()
   const hide = useHudVisibility((s) => s.hide)
   const { mode, title, subtitle, source } = useHudContent()
@@ -72,7 +72,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={mode === "champion" ? onLoadChampions : onLoadHex}
+            onClick={onRetry}
           >
             重试
           </Button>
@@ -96,7 +96,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
 
   return (
     <motion.div
-      className="pointer-events-auto fixed top-4 right-4 z-50 flex h-[min(480px,calc(100vh-32px))] w-[320px] flex-col overflow-hidden rounded-panel bg-surface shadow-glow"
+      className="pointer-events-auto fixed inset-0 z-50 flex h-full w-full flex-col overflow-hidden rounded-panel bg-surface shadow-glow"
       style={
         {
           "--progress": progress,
@@ -106,7 +106,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       initial="hidden"
       animate={exiting ? "exit" : "visible"}
       onAnimationComplete={() => {
-        if (exiting) hide()
+        if (exiting) onHidden()
       }}
     >
       {/* Header */}
@@ -115,16 +115,9 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
           <h2 className="truncate text-base font-semibold leading-tight text-ink">
             {title}
           </h2>
-          {subtitle && (
-            <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
-          )}
+          {subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
         </div>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={hide}
-          aria-label="关闭"
-        >
+        <Button variant="ghost" size="icon-sm" onClick={hide} aria-label="关闭">
           <XIcon />
         </Button>
       </header>
@@ -134,9 +127,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
 
       {/* Footer — source attribution + auto-hide progress bar */}
       <footer className="border-t border-border px-4 py-2">
-        <p className="mb-2 text-[10px] text-accent">
-          数据来源：{source}
-        </p>
+        <p className="mb-2 text-[10px] text-accent">数据来源：{source}</p>
         <Progress value={(1 - progress) * 100} />
       </footer>
     </motion.div>

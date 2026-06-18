@@ -23,6 +23,19 @@
         "resizable": false,
         "skipTaskbar": true,
         "visible": true
+      },
+      {
+        "label": "hud",
+        "title": "ArcaneEye HUD",
+        "width": 320,
+        "height": 480,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "shadow": false,
+        "resizable": false,
+        "skipTaskbar": true,
+        "visible": false
       }
     ],
     "security": {

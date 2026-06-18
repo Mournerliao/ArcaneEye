@@ -1,0 +1,6 @@
+"$schema" = "schemas/schema.json"
+
+[[permission]]
+identifier = "allow-hud-window"
+description = "Show and hide the dedicated HUD overlay window."
+commands.allow = ["show_hud_window", "hide_hud_window"]
