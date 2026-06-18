@@ -111,6 +111,98 @@ html {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   Hex grid background pattern
+   ═══════════════════════════════════════════════════════════ */
+
+.hex-grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image:
+    linear-gradient(
+      30deg,
+      var(--c-primary) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--c-primary) 87.5%,
+      var(--c-primary)
+    ),
+    linear-gradient(
+      150deg,
+      var(--c-primary) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--c-primary) 87.5%,
+      var(--c-primary)
+    ),
+    linear-gradient(
+      30deg,
+      var(--c-primary) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--c-primary) 87.5%,
+      var(--c-primary)
+    ),
+    linear-gradient(
+      150deg,
+      var(--c-primary) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      var(--c-primary) 87.5%,
+      var(--c-primary)
+    ),
+    linear-gradient(
+      60deg,
+      var(--c-primary) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      var(--c-primary) 75%,
+      var(--c-primary)
+    ),
+    linear-gradient(
+      60deg,
+      var(--c-primary) 25%,
+      transparent 25.5%,
+      transparent 75%,
+      var(--c-primary) 75%,
+      var(--c-primary)
+    );
+  background-size: 40px 70px;
+  background-position:
+    0 0,
+    0 0,
+    20px 35px,
+    20px 35px,
+    0 0,
+    20px 35px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Glow pulse animation for idle icon
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px var(--c-glow),
+      0 0 40px var(--c-glow);
+  }
+  50% {
+    box-shadow:
+      0 0 28px var(--c-glow-lg),
+      0 0 56px var(--c-glow);
+  }
+}
+
+.glow-pulse {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
    Reduced-motion overrides
    ═══════════════════════════════════════════════════════════ */
 
