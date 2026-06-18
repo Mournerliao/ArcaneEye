@@ -12,6 +12,7 @@
     "core:window:allow-set-focus",
     "core:event:default",
     "core:app:default",
-    "core:path:default"
+    "core:path:default",
+    "capture-screen:allow-capture-screen"
   ]
 }

@@ -4,11 +4,19 @@
 /// developer-tools and hot-reload work normally.
 /// In release builds the overlay ignores cursor events (click-through) so
 /// it never steals focus from the game.
+mod capture;
+
 use tauri::Manager;
+
+#[tauri::command]
+fn capture_screen() -> Result<String, String> {
+    capture::capture_primary_monitor()
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![capture_screen])
         .setup(|app| {
             let _window = app
                 .get_webview_window("main")
