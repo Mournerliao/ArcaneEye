@@ -1,11 +1,52 @@
-import { useState, useEffect, useCallback } from "react"
-import { motion } from "motion/react"
+import { useState, useEffect, useCallback, useMemo } from "react"
+import { motion, AnimatePresence } from "motion/react"
+import { toast } from "sonner"
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from "lucide-react"
 import { useAIConfigStore } from "@/stores/aiConfig"
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut"
 import { PROVIDER_CONFIGS } from "@/types"
 import type { AIProvider } from "@/types"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Spinner } from "@/components/ui/spinner"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { cn } from "@/lib/utils"
+import { Separator } from "@/components/ui/separator"
 
 interface SettingsPageProps {
   onClose: () => void
+}
+
+interface FormSnapshot {
+  provider: AIProvider
+  baseURL: string
+  modelId: string
+  apiKey: string
 }
 
 export function SettingsPage({ onClose }: SettingsPageProps) {
@@ -22,50 +63,85 @@ export function SettingsPage({ onClose }: SettingsPageProps) {
 
   const [showKey, setShowKey] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [localKey, setLocalKey] = useState("")
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [snapshot, setSnapshot] = useState<FormSnapshot | null>(null)
 
-  /* Load API key from Keychain on mount */
+  const isDirty = useMemo(() => {
+    if (!snapshot) return false
+    return (
+      snapshot.provider !== provider ||
+      snapshot.baseURL !== baseURL ||
+      snapshot.modelId !== modelId ||
+      snapshot.apiKey !== localKey
+    )
+  }, [snapshot, provider, baseURL, modelId, localKey])
+
+  const takeSnapshot = useCallback(() => {
+    setSnapshot({ provider, baseURL, modelId, apiKey: localKey })
+  }, [provider, baseURL, modelId, localKey])
+
   useEffect(() => {
     loadApiKey().then(() => {
       const store = useAIConfigStore.getState()
       setLocalKey(store.apiKey)
+      setTimeout(() => {
+        setSnapshot({
+          provider: useAIConfigStore.getState().provider,
+          baseURL: useAIConfigStore.getState().baseURL,
+          modelId: useAIConfigStore.getState().modelId,
+          apiKey: store.apiKey,
+        })
+      }, 0)
     })
   }, [loadApiKey])
 
-  /* When provider changes, auto-fill baseURL and modelId */
   const handleProviderChange = useCallback(
-    (p: AIProvider) => {
+    (value: string | null) => {
+      if (!value) return
+      const p = value as AIProvider
       setProvider(p)
       const config = PROVIDER_CONFIGS[p]
       setBaseURL(config.baseURL)
       setModelId(config.defaultModel)
-      // Reload API key for the new provider
-      loadApiKey().then(() => {
-        const store = useAIConfigStore.getState()
-        setLocalKey(store.apiKey)
-      })
+      const storedKey = useAIConfigStore.getState().apiKey
+      if (localKey === storedKey || localKey === "") {
+        loadApiKey().then(() => {
+          const store = useAIConfigStore.getState()
+          setLocalKey(store.apiKey)
+        })
+      }
     },
-    [setProvider, setBaseURL, setModelId, loadApiKey],
+    [setProvider, setBaseURL, setModelId, loadApiKey, localKey],
   )
 
   const handleSave = useCallback(async () => {
     setSaving(true)
     setError(null)
-    setSaved(false)
     try {
       if (localKey.trim()) {
         await saveApiKey(localKey.trim())
       }
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
+      takeSnapshot()
+      toast.success("配置已保存")
     } catch (err) {
       setError(err instanceof Error ? err.message : "保存失败")
     } finally {
       setSaving(false)
     }
-  }, [localKey, saveApiKey])
+  }, [localKey, saveApiKey, takeSnapshot])
+
+  const handleBack = useCallback(() => {
+    if (isDirty) {
+      setShowConfirm(true)
+    } else {
+      onClose()
+    }
+  }, [isDirty, onClose])
+
+  useKeyboardShortcut("Escape", handleBack)
+  useKeyboardShortcut("s", handleSave, { ctrl: true })
 
   const currentConfig = PROVIDER_CONFIGS[provider]
   const isCustom = provider === "custom"
@@ -91,139 +167,174 @@ export function SettingsPage({ onClose }: SettingsPageProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="flex items-center gap-1.5 rounded-panel border border-surface-2 bg-surface/60 px-2.5 py-1.5 text-xs text-muted backdrop-blur-sm transition-all hover:border-primary/30 hover:text-ink"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            aria-label="返回主界面"
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeftIcon data-icon="inline-start" />
             返回
-          </button>
+          </Button>
           <h2 className="text-sm font-semibold text-ink">AI 设置</h2>
           <div className="w-14" />
         </div>
 
-        {/* Provider */}
-        <FieldGroup label="Provider">
-          <select
-            value={provider}
-            onChange={(e) => handleProviderChange(e.target.value as AIProvider)}
-            className="w-full rounded-panel border border-surface-2 bg-surface px-3 py-2 text-sm text-ink outline-none transition-all focus:border-primary/50 focus:shadow-glow"
-          >
-            {Object.entries(PROVIDER_CONFIGS).map(([key, cfg]) => (
-              <option key={key} value={key}>
-                {cfg.name}
-              </option>
-            ))}
-          </select>
-        </FieldGroup>
-
-        {/* API Key */}
-        <FieldGroup label="API Key">
-          <div className="relative">
-            <input
-              type={showKey ? "text" : "password"}
-              value={localKey}
-              onChange={(e) => setLocalKey(e.target.value)}
-              placeholder="sk-..."
-              className="w-full rounded-panel border border-surface-2 bg-surface px-3 py-2 pr-16 font-mono text-sm text-ink outline-none placeholder:text-muted/50 transition-all focus:border-primary/50 focus:shadow-glow"
-            />
-            <button
-              type="button"
-              onClick={() => setShowKey(!showKey)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm px-2 py-0.5 text-[10px] text-muted transition-colors hover:text-ink"
-            >
-              {showKey ? "隐藏" : "显示"}
-            </button>
+        {/* ── Section 1: Provider + Model ── */}
+        <section className="flex flex-col gap-3">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            服务商配置
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">服务商</Label>
+            <Select value={provider} onValueChange={handleProviderChange}>
+              <SelectTrigger className="w-full" aria-label="选择 AI 服务商">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {Object.entries(PROVIDER_CONFIGS).map(([key, cfg]) => (
+                    <SelectItem key={key} value={key}>
+                      {cfg.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-        </FieldGroup>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">模型</Label>
+            {isCustom || currentConfig.models.length === 0 ? (
+              <Input
+                type="text"
+                value={modelId}
+                onChange={(e) => setModelId(e.target.value)}
+                placeholder="gpt-4o"
+                aria-label="模型名称"
+                className="font-mono"
+              />
+            ) : (
+              <Select value={modelId} onValueChange={(v) => v && setModelId(v)}>
+                <SelectTrigger className="w-full" aria-label="选择模型">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {currentConfig.models.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </section>
 
-        {/* Base URL */}
-        <FieldGroup label="Base URL">
-          <input
-            type="text"
-            value={baseURL}
-            onChange={(e) => setBaseURL(e.target.value)}
-            placeholder="https://api.openai.com/v1"
-            disabled={!isCustom}
-            className="w-full rounded-panel border border-surface-2 bg-surface px-3 py-2 font-mono text-sm text-ink outline-none placeholder:text-muted/50 transition-all focus:border-primary/50 focus:shadow-glow disabled:opacity-40"
-          />
-          {!isCustom && (
-            <p className="mt-1 text-[10px] text-muted">切换到"自定义"可编辑</p>
-          )}
-        </FieldGroup>
+        <Separator />
 
-        {/* Model */}
-        <FieldGroup label="Model">
-          {isCustom || currentConfig.models.length === 0 ? (
-            <input
+        {/* ── Section 2: API Key ── */}
+        <section className="flex flex-col gap-3">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            认证
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">密钥</Label>
+            <InputGroup>
+              <InputGroupInput
+                type={showKey ? "text" : "password"}
+                value={localKey}
+                onChange={(e) => setLocalKey(e.target.value)}
+                placeholder="sk-..."
+                aria-label="API 密钥"
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  onClick={() => setShowKey(!showKey)}
+                  aria-label={showKey ? "隐藏密钥" : "显示密钥"}
+                  aria-pressed={showKey}
+                >
+                  {showKey ? (
+                    <EyeOffIcon />
+                  ) : (
+                    <EyeIcon />
+                  )}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </section>
+
+        <Separator />
+
+        {/* ── Section 3: Advanced (Base URL) ── */}
+        <section className="flex flex-col gap-3">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            高级设置
+          </p>
+          <div className={cn("flex flex-col gap-1.5", !isCustom && "opacity-60")}>
+            <Label className="text-xs font-medium text-muted-foreground">接口地址</Label>
+            <Input
               type="text"
-              value={modelId}
-              onChange={(e) => setModelId(e.target.value)}
-              placeholder="gpt-4o"
-              className="w-full rounded-panel border border-surface-2 bg-surface px-3 py-2 font-mono text-sm text-ink outline-none placeholder:text-muted/50 transition-all focus:border-primary/50 focus:shadow-glow"
+              value={baseURL}
+              onChange={(e) => setBaseURL(e.target.value)}
+              placeholder="https://api.openai.com/v1"
+              disabled={!isCustom}
+              aria-label="API 接口地址"
+              className="font-mono"
             />
-          ) : (
-            <select
-              value={modelId}
-              onChange={(e) => setModelId(e.target.value)}
-              className="w-full rounded-panel border border-surface-2 bg-surface px-3 py-2 text-sm text-ink outline-none transition-all focus:border-primary/50 focus:shadow-glow"
-            >
-              {currentConfig.models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          )}
-        </FieldGroup>
+            {!isCustom && (
+              <p className="text-[11px] text-muted-foreground">切换到"自定义"可编辑</p>
+            )}
+          </div>
+        </section>
 
-        {/* Status messages */}
-        {error && (
-          <p className="text-xs text-danger">{error}</p>
-        )}
-        {saved && (
-          <p className="text-xs text-success">已保存</p>
-        )}
+        {/* Error message */}
+        <AnimatePresence mode="wait">
+          {error && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Save button */}
-        <button
+        <Button
           onClick={handleSave}
           disabled={saving}
-          className="mt-auto rounded-panel border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-medium text-ink transition-all hover:border-primary hover:bg-primary/15 hover:shadow-glow disabled:opacity-50"
+          className="mt-auto"
+          aria-label="保存配置"
         >
+          {saving && <Spinner data-icon="inline-start" />}
           {saving ? "保存中..." : "保存配置"}
-        </button>
+        </Button>
       </motion.div>
-    </div>
-  )
-}
 
-/* ─── Reusable field group ─── */
-
-function FieldGroup({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium uppercase tracking-wider text-muted">
-        {label}
-      </label>
-      {children}
+      {/* Confirm leave dialog */}
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>未保存的更改</AlertDialogTitle>
+            <AlertDialogDescription>
+              有未保存的更改，确定离开？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>继续编辑</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={onClose}>
+              离开
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

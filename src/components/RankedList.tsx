@@ -1,5 +1,7 @@
 import { motion } from "motion/react"
 import type { RankedItem } from "@/types"
+import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress"
+import { cn } from "@/lib/utils"
 
 interface RankedListProps {
   items: RankedItem[]
@@ -47,17 +49,19 @@ function RankedRow({
 
   return (
     <div
-      className={`group flex items-center gap-3 rounded-sm px-3 transition-colors ${
+      className={cn(
+        "group flex items-center gap-3 rounded-sm px-3 transition-colors",
         isFirst
           ? "border border-primary/20 bg-primary/8 py-2.5 shadow-glow"
-          : "py-2 hover:bg-surface-2"
-      }`}
+          : "py-2 hover:bg-muted",
+      )}
     >
       {/* Rank */}
       <span
-        className={`w-5 shrink-0 text-center font-mono font-bold ${
-          isFirst ? "text-base text-accent" : "text-sm text-primary"
-        }`}
+        className={cn(
+          "w-5 shrink-0 text-center font-mono font-bold",
+          isFirst ? "text-base text-accent" : "text-sm text-primary",
+        )}
       >
         {item.rank}
       </span>
@@ -65,33 +69,32 @@ function RankedRow({
       {/* Name + bar */}
       <div className="min-w-0 flex-1">
         <p
-          className={`truncate leading-tight ${
+          className={cn(
+            "truncate leading-tight",
             isFirst
               ? "text-base font-semibold text-accent"
-              : "text-sm text-ink"
-          }`}
+              : "text-sm text-ink",
+          )}
         >
           {item.name}
         </p>
-        <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-2">
-          <div
-            className={`h-full rounded-full ${
-              isFirst ? "bg-accent" : "bg-primary"
-            }`}
-            style={{ width: barWidth }}
-          />
-        </div>
+        <Progress value={parseFloat(barWidth)} className="mt-1">
+          <ProgressTrack className="h-1">
+            <ProgressIndicator className={cn(isFirst ? "bg-accent" : "bg-primary")} />
+          </ProgressTrack>
+        </Progress>
       </div>
 
       {/* Win rate */}
       <span
-        className={`shrink-0 font-mono tabular-nums ${
+        className={cn(
+          "shrink-0 font-mono tabular-nums",
           isFirst
             ? "text-lg font-bold text-accent"
             : isTop
               ? "text-base font-bold text-primary"
-              : "text-base text-muted"
-        }`}
+              : "text-base text-muted-foreground",
+        )}
       >
         {item.winRate.toFixed(1)}%
       </span>

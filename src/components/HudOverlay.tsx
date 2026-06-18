@@ -1,10 +1,14 @@
 import { type CSSProperties } from "react"
 import { motion } from "motion/react"
+import { XIcon } from "lucide-react"
 import { useHudVisibility, EXIT_ANIMATION_MS } from "@/stores/hudVisibility"
 import { useHudContent } from "@/stores/hudContent"
 import { useRankingDataStore } from "@/stores/rankingData"
 import { useAutoHide } from "@/hooks/useAutoHide"
 import { RankedList } from "@/components/RankedList"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Progress } from "@/components/ui/progress"
 
 /* ── Entrance / exit animation variants ── */
 const panelVariants = {
@@ -48,12 +52,12 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
         <div className="flex flex-col gap-2.5 py-2">
           {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="flex items-center gap-3 px-3 py-2">
-              <div className="h-4 w-5 animate-pulse rounded bg-surface-2" />
+              <Skeleton className="size-4 rounded" />
               <div className="flex-1">
-                <div className="h-4 w-24 animate-pulse rounded bg-surface-2" />
-                <div className="mt-1 h-1 w-full animate-pulse rounded-full bg-surface-2" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="mt-1 h-1 w-full rounded-full" />
               </div>
-              <div className="h-4 w-12 animate-pulse rounded bg-surface-2" />
+              <Skeleton className="h-4 w-12" />
             </div>
           ))}
         </div>
@@ -64,13 +68,14 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       return (
         <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
           <span className="text-2xl opacity-40">⚠</span>
-          <p className="text-sm text-muted">{error}</p>
-          <button
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={mode === "champion" ? onLoadChampions : onLoadHex}
-            className="rounded-sm bg-surface-2 px-3 py-1.5 text-xs text-ink transition-colors hover:bg-primary hover:text-white"
           >
             重试
-          </button>
+          </Button>
         </div>
       )
     }
@@ -81,7 +86,7 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       return (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <span className="text-2xl opacity-30">{icon}</span>
-          <p className="mt-2 text-sm text-muted">{msg}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{msg}</p>
         </div>
       )
     }
@@ -105,48 +110,34 @@ export function HudOverlay({ onLoadChampions, onLoadHex }: HudOverlayProps) {
       }}
     >
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-surface-2 px-4 py-3">
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-base font-semibold leading-tight text-ink">
             {title}
           </h2>
           {subtitle && (
-            <p className="mt-0.5 text-xs text-muted">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
           )}
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={hide}
-          className="ml-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-muted transition-colors hover:text-accent"
           aria-label="关闭"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          >
-            <path d="M1 1l12 12M13 1L1 13" />
-          </svg>
-        </button>
+          <XIcon />
+        </Button>
       </header>
 
       {/* Body — data list */}
       <main className="flex-1 overflow-y-auto px-4 py-3">{panelContent}</main>
 
       {/* Footer — source attribution + auto-hide progress bar */}
-      <footer className="border-t border-surface-2 px-4 py-2">
+      <footer className="border-t border-border px-4 py-2">
         <p className="mb-2 text-[10px] text-accent">
           数据来源：{source}
         </p>
-        <div className="h-0.5 w-full overflow-hidden rounded-full bg-surface-2">
-          <div
-            className="h-full rounded-full bg-primary/40"
-            style={{ width: `${(1 - progress) * 100}%` }}
-          />
-        </div>
+        <Progress value={(1 - progress) * 100} />
       </footer>
     </motion.div>
   )

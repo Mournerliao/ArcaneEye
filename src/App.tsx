@@ -1,4 +1,5 @@
 import { HudPanel } from "@/components/HudPanel"
+import { Toaster } from "@/components/ui/sonner"
 
 /**
  * ArcaneEye root component.
@@ -7,5 +8,10 @@ import { HudPanel } from "@/components/HudPanel"
  * Theme DOM mutation is handled solely by themeStore.
  */
 export function App() {
-  return <HudPanel />
+  return (
+    <>
+      <HudPanel />
+      <Toaster />
+    </>
+  )
 }
