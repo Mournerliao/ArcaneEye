@@ -5,6 +5,7 @@
 /// In release builds the overlay ignores cursor events (click-through) so
 /// it never steals focus from the game.
 mod capture;
+mod keychain;
 
 use tauri::Manager;
 
@@ -16,7 +17,12 @@ fn capture_screen() -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![capture_screen])
+        .invoke_handler(tauri::generate_handler![
+            capture_screen,
+            keychain::save_api_key,
+            keychain::get_api_key,
+            keychain::delete_api_key
+        ])
         .setup(|app| {
             let _window = app
                 .get_webview_window("main")

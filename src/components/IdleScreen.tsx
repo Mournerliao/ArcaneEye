@@ -4,9 +4,10 @@ import { useThemeStore } from "@/stores/themeStore"
 interface IdleScreenProps {
   onLoadChampions: () => void
   onLoadHex: () => void
+  onOpenSettings: () => void
 }
 
-export function IdleScreen({ onLoadChampions, onLoadHex }: IdleScreenProps) {
+export function IdleScreen({ onLoadChampions, onLoadHex, onOpenSettings }: IdleScreenProps) {
   const theme = useThemeStore((s) => s.theme)
   const toggleTheme = useThemeStore((s) => s.toggleTheme)
 
@@ -22,6 +23,31 @@ export function IdleScreen({ onLoadChampions, onLoadHex }: IdleScreenProps) {
         }}
       />
       <div className="hex-grid-bg pointer-events-none absolute inset-0" />
+
+      {/* Settings gear — top-left corner */}
+      <motion.button
+        onClick={onOpenSettings}
+        className="absolute top-5 left-5 z-20 flex items-center gap-1.5 rounded-panel border border-surface-2 bg-surface/60 px-2.5 py-1.5 text-xs text-muted backdrop-blur-sm transition-all hover:border-primary/30 hover:text-ink"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.5 }}
+        aria-label="AI 设置"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+        设置
+      </motion.button>
 
       {/* Theme toggle — top-right corner, out of the primary flow */}
       <motion.button

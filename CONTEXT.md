@@ -30,3 +30,11 @@ _Avoid_: 悬浮窗, 覆盖层, overlay
 **主屏 (Primary Monitor)**:
 用户当前的主显示器。截图模块默认捕获该屏幕。
 _Avoid_: 主屏幕, 主显示器
+
+**BYOK (Bring Your Own Key)**:
+用户自带 AI 提供商 API Key 的集成模式。应用提供编排能力，用户负责 AI 访问凭证。
+_Avoid_: 自带密钥
+
+**Provider**:
+AI 模型提供商，如 OpenAI、Anthropic、Google。每个 Provider 有自己的 API Key 和 Base URL。
+_Avoid_: 提供商, AI 供应商
