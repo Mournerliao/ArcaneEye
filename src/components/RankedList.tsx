@@ -1,22 +1,24 @@
 import { motion } from "motion/react"
 import type { RankedItem } from "@/types"
-import { Progress, ProgressTrack, ProgressIndicator } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
 interface RankedListProps {
   items: RankedItem[]
+  maxItems?: number
 }
 
 /**
- * Ranked data list with staggered entrance animation.
+ * Glanceable recommendation list.
  *
- * Each item fades in + slides up with a 50 ms stagger,
- * per DESIGN.md "Data reveal" spec.
+ * The HUD's primary job is letting the player read candidate names. Keep the
+ * numeric columns narrow, and allow long augment names to wrap to two lines.
  */
-export function RankedList({ items }: RankedListProps) {
+export function RankedList({ items, maxItems = 5 }: RankedListProps) {
+  const visibleItems = items.slice(0, maxItems)
+
   return (
-    <ul className="flex flex-col gap-1">
-      {items.map((item, i) => (
+    <ul className="flex flex-col gap-1.5">
+      {visibleItems.map((item, i) => (
         <motion.li
           key={item.rank}
           initial={{ opacity: 0, y: 4 }}
@@ -34,8 +36,6 @@ export function RankedList({ items }: RankedListProps) {
   )
 }
 
-/* ── Single row ── */
-
 function RankedRow({
   item,
   isTop,
@@ -50,53 +50,58 @@ function RankedRow({
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 rounded-sm px-3 transition-colors",
+        "relative grid min-h-[52px] grid-cols-[2rem_minmax(0,1fr)_5.25rem] items-center gap-3 rounded-sm px-3 py-2 transition-colors",
         isFirst
-          ? "border border-primary/20 bg-primary/8 py-2.5 shadow-glow"
-          : "py-2 hover:bg-muted",
+          ? "border border-primary/25 bg-primary/10 shadow-glow"
+          : "hover:bg-muted",
       )}
     >
-      {/* Rank */}
       <span
         className={cn(
-          "w-5 shrink-0 text-center font-mono font-bold",
-          isFirst ? "text-base text-accent" : "text-sm text-primary",
+          "inline-flex size-7 items-center justify-center rounded-sm font-mono text-base font-bold",
+          isFirst
+            ? "bg-accent/15 text-accent"
+            : isTop
+              ? "text-primary"
+              : "text-muted-foreground",
         )}
       >
         {item.rank}
       </span>
 
-      {/* Name + bar */}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0">
         <p
           className={cn(
-            "truncate leading-tight",
+            "overflow-hidden text-sm leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
             isFirst
-              ? "text-base font-semibold text-accent"
-              : "text-sm text-ink",
+              ? "font-semibold text-accent"
+              : isTop
+                ? "font-medium text-ink"
+                : "text-muted-foreground",
           )}
         >
           {item.name}
         </p>
-        <Progress value={parseFloat(barWidth)} className="mt-1">
-          <ProgressTrack className="h-1">
-            <ProgressIndicator className={cn(isFirst ? "bg-accent" : "bg-primary")} />
-          </ProgressTrack>
-        </Progress>
       </div>
 
-      {/* Win rate */}
       <span
         className={cn(
-          "shrink-0 font-mono tabular-nums",
+          "text-right font-mono text-lg tabular-nums",
           isFirst
-            ? "text-lg font-bold text-accent"
+            ? "font-bold text-accent"
             : isTop
-              ? "text-base font-bold text-primary"
-              : "text-base text-muted-foreground",
+              ? "font-bold text-primary"
+              : "text-muted-foreground",
         )}
       >
         {item.winRate.toFixed(1)}%
+      </span>
+
+      <span className="absolute bottom-1.5 left-[3.75rem] right-[6.75rem] h-1 overflow-hidden rounded-full bg-muted">
+        <span
+          className={cn("block h-full", isFirst ? "bg-accent" : "bg-primary")}
+          style={{ width: barWidth }}
+        />
       </span>
     </div>
   )

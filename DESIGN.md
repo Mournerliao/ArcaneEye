@@ -158,8 +158,8 @@ Snappy with arcane glow. The overlay appears fast, holds briefly, and fades. Mot
 
 **HUD overlay dimensions:**
 
-- Width: 320px (fixed, not responsive — this is a desktop overlay)
-- Max height: 480px (scrollable if content exceeds)
+- Width: 600px (fixed, not responsive — this is a desktop overlay)
+- Height: 560px (fits the header, column labels, source, auto-hide progress, and a scrollable top-10 recommendation list)
 - Padding: 16px
 - Border-radius: 8px (subtle, not bubbly)
 

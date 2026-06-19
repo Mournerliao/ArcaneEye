@@ -8,8 +8,8 @@ use dpi::{PhysicalPosition, PhysicalSize, Position, Size};
 use tauri::Manager;
 
 const HUD_WINDOW_LABEL: &str = "hud";
-const HUD_WINDOW_WIDTH: u32 = 320;
-const HUD_WINDOW_HEIGHT: u32 = 480;
+const HUD_WINDOW_WIDTH: u32 = 600;
+const HUD_WINDOW_HEIGHT: u32 = 560;
 const HUD_SCREEN_EDGE_GAP: i32 = 24;
 
 #[tauri::command]
@@ -101,10 +101,10 @@ mod tests {
         let position = calculate_hud_position(
             PhysicalPosition::new(0, 0),
             PhysicalSize::new(2560, 1440),
-            PhysicalSize::new(320, 480),
+            PhysicalSize::new(600, 560),
             24,
         );
 
-        assert_eq!(position, PhysicalPosition::new(2216, 480));
+        assert_eq!(position, PhysicalPosition::new(1936, 440));
     }
 }

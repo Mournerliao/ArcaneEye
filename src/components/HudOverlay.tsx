@@ -91,7 +91,16 @@ export function HudOverlay({ onHidden, onRetry }: HudOverlayProps) {
       )
     }
 
-    return <RankedList items={currentItems} />
+    return (
+      <div className="space-y-2">
+        <div className="grid grid-cols-[2rem_minmax(0,1fr)_5.25rem] gap-3 px-3 text-[10px] leading-none text-muted-foreground">
+          <span>排名</span>
+          <span>名称</span>
+          <span className="text-right">胜率</span>
+        </div>
+        <RankedList items={currentItems} maxItems={10} />
+      </div>
+    )
   })()
 
   return (
@@ -110,7 +119,7 @@ export function HudOverlay({ onHidden, onRetry }: HudOverlayProps) {
       }}
     >
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-5">
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-base font-semibold leading-tight text-ink">
             {title}
@@ -123,10 +132,10 @@ export function HudOverlay({ onHidden, onRetry }: HudOverlayProps) {
       </header>
 
       {/* Body — data list */}
-      <main className="flex-1 overflow-y-auto px-4 py-3">{panelContent}</main>
+      <main className="min-h-0 flex-1 overflow-y-auto px-4 py-3">{panelContent}</main>
 
       {/* Footer — source attribution + auto-hide progress bar */}
-      <footer className="border-t border-border px-4 py-2">
+      <footer className="shrink-0 border-t border-border px-5 py-2.5">
         <p className="mb-2 text-[10px] text-accent">数据来源：{source}</p>
         <Progress value={(1 - progress) * 100} />
       </footer>

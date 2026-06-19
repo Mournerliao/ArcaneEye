@@ -27,8 +27,8 @@
       {
         "label": "hud",
         "title": "ArcaneEye HUD",
-        "width": 320,
-        "height": 480,
+        "width": 600,
+        "height": 560,
         "transparent": true,
         "decorations": false,
         "alwaysOnTop": true,
