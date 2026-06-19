@@ -21,7 +21,7 @@ export function IdleScreen({ onLoadChampions, onLoadHex, onOpenSettings }: IdleS
   }, [])
 
   return (
-    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden rounded-panel bg-bg">
+    <div className="tauri-window-surface relative flex items-center justify-center bg-bg">
       {/* Background atmosphere */}
       <div
         className="pointer-events-none absolute inset-0"

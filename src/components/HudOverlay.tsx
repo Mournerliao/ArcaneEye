@@ -105,7 +105,7 @@ export function HudOverlay({ onHidden, onRetry }: HudOverlayProps) {
 
   return (
     <motion.div
-      className="pointer-events-auto fixed inset-0 z-50 flex h-full w-full flex-col overflow-hidden rounded-panel bg-surface shadow-glow"
+      className="tauri-window-surface pointer-events-auto fixed inset-0 z-50 flex flex-col bg-surface shadow-glow"
       style={
         {
           "--progress": progress,

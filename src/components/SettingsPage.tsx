@@ -146,7 +146,7 @@ export function SettingsPage({ onClose }: SettingsPageProps) {
   const isCustom = provider === "custom"
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-bg">
+    <div className="tauri-window-surface relative bg-bg">
       {/* 背景光晕 */}
       <div
         className="pointer-events-none absolute inset-0"
