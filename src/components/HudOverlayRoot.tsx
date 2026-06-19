@@ -2,6 +2,8 @@ import { useCallback, useEffect } from "react"
 import { emitTo, listen } from "@tauri-apps/api/event"
 import { HudOverlay } from "@/components/HudOverlay"
 import { hideHudWindow, type HudPayload, type HudUpdatePayload } from "@/services/hudWindow"
+import { applyThemeToDocument, listenForThemeChanged } from "@/services/themeSync"
+import { useThemeStore } from "@/stores/themeStore"
 import { useHudContent } from "@/stores/hudContent"
 import { useHudVisibility } from "@/stores/hudVisibility"
 import { useRankingDataStore } from "@/stores/rankingData"
@@ -48,6 +50,11 @@ export function HudOverlayRoot() {
     let cancelled = false
 
     async function bindHudEvents() {
+      applyThemeToDocument(useThemeStore.getState().theme)
+
+      const unlistenThemeChanged = await listenForThemeChanged((theme) => {
+        applyThemeToDocument(theme)
+      })
       const unlistenShow = await listen<HudPayload>("hud:show", ({ payload }) => {
         applyPayload(payload)
         show()
@@ -60,13 +67,19 @@ export function HudOverlayRoot() {
       })
 
       if (cancelled) {
+        unlistenThemeChanged()
         unlistenShow()
         unlistenUpdate()
         unlistenHide()
         return
       }
 
-      unlistenCallbacks.push(unlistenShow, unlistenUpdate, unlistenHide)
+      unlistenCallbacks.push(
+        unlistenThemeChanged,
+        unlistenShow,
+        unlistenUpdate,
+        unlistenHide,
+      )
     }
 
     void bindHudEvents()

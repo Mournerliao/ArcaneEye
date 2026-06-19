@@ -1,7 +1,12 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import {
+  applyThemeToDocument,
+  emitThemeChanged,
+  type Theme,
+} from "@/services/themeSync"
 
-export type Theme = "cyan" | "gold"
+export type { Theme }
 
 interface ThemeStore {
   theme: Theme
@@ -15,7 +20,8 @@ export const useThemeStore = create<ThemeStore>()(
       theme: "cyan",
 
       setTheme(theme) {
-        document.documentElement.dataset.theme = theme === "cyan" ? "" : theme
+        applyThemeToDocument(theme)
+        void emitThemeChanged(theme)
         set({ theme })
       },
 
@@ -28,8 +34,7 @@ export const useThemeStore = create<ThemeStore>()(
       name: "arcaneeye-theme",
       onRehydrateStorage: () => (state) => {
         if (state) {
-          document.documentElement.dataset.theme =
-            state.theme === "cyan" ? "" : state.theme
+          applyThemeToDocument(state.theme)
         }
       },
     },

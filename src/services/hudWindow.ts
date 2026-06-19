@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/core"
 import { emitTo } from "@tauri-apps/api/event"
 import type { HudMode, RankedItem } from "@/types"
+import { emitThemeChanged } from "@/services/themeSync"
+import { useThemeStore } from "@/stores/themeStore"
 
 export const HUD_WINDOW_LABEL = "hud"
 
@@ -26,6 +28,7 @@ export interface HudUpdatePayload {
 
 export async function showHud(payload: HudPayload): Promise<void> {
   await invoke("show_hud_window")
+  await emitThemeChanged(useThemeStore.getState().theme)
   await emitTo(HUD_WINDOW_LABEL, "hud:show", {
     source: "ARAMGG",
     items: [],
